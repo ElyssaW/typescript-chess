@@ -1,0 +1,19 @@
+.square {
+    min-width: 80px;
+    min-height: 80px;
+    display: inline-block;
+}
+
+body{
+    background-color: brown;
+    display: flex;
+    justify-content: center;
+}
+
+.white {
+    background-color: white;
+}
+
+.black {
+    background-color: black;
+}
