@@ -12,16 +12,67 @@ function createBoard() {
 
     return board
 }
-    
-let board = createBoard()
+
+// Set board to initial state
+function setStartingBoard() {
+
+    // Function set pawns
+    function setPawns () {
+        return 
+    }
+
+    // Function to set other pieces
+    let board = createBoard()
+
+    board.forEach((row, index) => {
+        if (index === 0) {
+
+        }
+    })
+}
 
 // Initialize pieces
-    // Pawn
-    // Rook
-    // Knight
-    // Bishop
-    // Queen
-    // King
+class Piece {
+    // Name of the piece
+    name: string
+    
+    // X/Y Position of the piece
+    pos: {
+        x: number
+        y: number
+    }
+
+    // Color or "team" of the piece
+    color: string
+
+    // Whether the piece is alive or dead
+    alive: boolean
+
+    // What spaces can the piece move to
+    availableMoves: [{x: number, y: number}]
+
+    constructor(name: string, color: string, pos: {x: number, y: number}) {
+        this.name = name
+        this.color = color
+        this.pos = pos
+        this.alive = true
+    }
+
+    move() {
+        // How the piece moves
+    }
+}
+
+// Pawn
+class Pawn extends Piece {
+    name: 'Pawn'
+}
+
+// Rook
+// Knight
+// Bishop
+// Queen
+// King
 
 // Check position
     // Checkmate position
