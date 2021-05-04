@@ -296,6 +296,13 @@ var Player = /** @class */ (function () {
         this.pieces[this.selected].pos = pos;
         this.selected = null;
     };
+    Player.prototype.capturePiece = function (piece) {
+        this.capturedPieces.push(piece);
+        var captured = document.getElementById(this.color + "captured");
+        var newCapture = document.createElement('span');
+        newCapture.className = "square " + piece.color + piece.name;
+        captured.appendChild(newCapture);
+    };
     Player.prototype.createPieces = function (backRow, frontRow) {
         // Create Pawns
         this.pieces.push(new Pawn(0, this.color, { x: 0, y: frontRow }));
@@ -368,7 +375,7 @@ function drawBoard() {
     drawPlayerPieces(playerOne);
     drawPlayerPieces(playerTwo);
 }
-function handleTurn(e, square, player) {
+function handleTurn(e, square, player, opponent) {
     // Check if the square clicked on contains a piece
     var clickedPiece;
     if (board[square.x][square.y]) {
@@ -385,7 +392,8 @@ function handleTurn(e, square, player) {
             // Check if the square the player is moving to is occupied, and if so, if the occupant is an enemy piece
             if (clickedPiece && clickedPiece.color != player.color) {
                 // Capture the enemy piece
-                playerTwo.pieces[clickedPiece.id].alive = false;
+                opponent.pieces[clickedPiece.id].alive = false;
+                player.capturePiece(opponent.pieces[clickedPiece.id]);
             }
             // Set the position of the player's piece to the clicked square
             player.pieces[player.selected].pos = square;
@@ -427,22 +435,22 @@ function handleTurn(e, square, player) {
     }
 }
 function changeTurn(player) {
-    var board = document.getElementById(player.color + "board");
     var turnheader = document.getElementById(player.color + "turn");
+    turnheader.className = "turnheader " + player.color + "current";
     turnheader.innerText = 'Your Turn';
 }
 function clearTurn(player) {
-    var board = document.getElementById(player.color + "board");
     var turnheader = document.getElementById(player.color + "turn");
+    turnheader.className = "turnheader";
     turnheader.innerText = 'Opponent\'s Turn';
 }
 function pieceClicked(e, square) {
     var turnHandled;
     if (turnCount % 2 === 0) {
-        turnHandled = handleTurn(e, square, playerOne);
+        turnHandled = handleTurn(e, square, playerOne, playerTwo);
     }
     else {
-        turnHandled = handleTurn(e, square, playerTwo);
+        turnHandled = handleTurn(e, square, playerTwo, playerOne);
     }
     if (turnHandled) {
         turnCount++;

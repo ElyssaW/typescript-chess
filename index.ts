@@ -350,6 +350,16 @@ class Player {
         this.selected = null
     }
 
+    capturePiece(piece: Piece) {
+        this.capturedPieces.push(piece)
+
+        let captured = document.getElementById(`${this.color}captured`)
+        let newCapture = document.createElement('span')
+        newCapture.className = `square ${piece.color}${piece.name}`
+
+        captured.appendChild(newCapture)
+    }
+
     createPieces (backRow:number, frontRow:number) {
         // Create Pawns
         this.pieces.push(
@@ -471,7 +481,7 @@ function drawBoard() {
     drawPlayerPieces(playerTwo)
 }
 
-function handleTurn (e, square:{x:number, y:number}, player: Player) {
+function handleTurn (e, square:{x:number, y:number}, player: Player, opponent: Player) {
 
     // Check if the square clicked on contains a piece
     let clickedPiece: Piece
@@ -493,7 +503,8 @@ function handleTurn (e, square:{x:number, y:number}, player: Player) {
             // Check if the square the player is moving to is occupied, and if so, if the occupant is an enemy piece
             if (clickedPiece && clickedPiece.color != player.color) {
                 // Capture the enemy piece
-                playerTwo.pieces[clickedPiece.id].alive = false
+                opponent.pieces[clickedPiece.id].alive = false
+                player.capturePiece(opponent.pieces[clickedPiece.id])
             }
 
             // Set the position of the player's piece to the clicked square
@@ -544,15 +555,15 @@ function handleTurn (e, square:{x:number, y:number}, player: Player) {
 }
 
 function changeTurn (player: Player) {
-    let board = document.getElementById(`${player.color}board`)
     let turnheader = document.getElementById(`${player.color}turn`)
+    turnheader.className = `turnheader ${player.color}current`
 
     turnheader.innerText = 'Your Turn'
 }
 
 function clearTurn (player: Player) {
-    let board = document.getElementById(`${player.color}board`)
     let turnheader = document.getElementById(`${player.color}turn`)
+    turnheader.className = `turnheader`
 
     turnheader.innerText = 'Opponent\'s Turn'
 }
@@ -561,9 +572,9 @@ function pieceClicked (e, square:{x:number, y:number}) {
     let turnHandled: boolean
 
     if (turnCount % 2 === 0) {
-        turnHandled = handleTurn(e, square, playerOne)
+        turnHandled = handleTurn(e, square, playerOne, playerTwo)
     } else {
-        turnHandled = handleTurn(e, square, playerTwo)
+        turnHandled = handleTurn(e, square, playerTwo, playerOne)
     }
 
     if (turnHandled) {

@@ -21,6 +21,20 @@ body{
     width: 300px;
 }
 
+.turnheader {
+    padding: 20px;
+}
+
+.blackcurrent {
+    background-color: black;
+    color: white;
+}
+
+.whitecurrent {
+    background-color: white;
+    color: black;
+}
+
 .board{
     display: flex;
     justify-content: space-between;
