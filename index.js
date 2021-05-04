@@ -14,6 +14,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 console.log('Hello');
+var turnCount = 0;
 // Initialize board
 function createBoard() {
     var newBoard = [];
@@ -279,9 +280,6 @@ var King = /** @class */ (function (_super) {
     }
     return King;
 }(Piece));
-// Check position
-// Checkmate position
-// Turn counter
 // Player class
 var Player = /** @class */ (function () {
     function Player(name, color) {
@@ -329,6 +327,18 @@ var playerOne = new Player('Elyssa', 'white');
 playerOne.createPieces(0, 1);
 var playerTwo = new Player('Guest', 'black');
 playerTwo.createPieces(7, 6);
+// Check position
+// Checkmate position
+function generateAllAvailableMoves() {
+    function generatePlayerMoves(player) {
+        player.pieces.forEach(function (piece) {
+            piece.availableMoves = [];
+            piece.generateMoves();
+        });
+    }
+    generatePlayerMoves(playerOne);
+    generatePlayerMoves(playerTwo);
+}
 function drawBoard() {
     function clearBoard() {
         for (var i = 0; i < 8; i++) {
@@ -358,63 +368,94 @@ function drawBoard() {
     drawPlayerPieces(playerOne);
     drawPlayerPieces(playerTwo);
 }
-function pieceClicked(e, square) {
-    console.log('clicked');
-    console.log(square);
+function handleTurn(e, square, player) {
     // Check if the square clicked on contains a piece
     var clickedPiece;
     if (board[square.x][square.y]) {
         clickedPiece = board[square.x][square.y];
     }
     // Check if the player currently has a piece selected
-    if (playerOne.selected || playerOne.selected === 0) {
-        console.log(playerOne.pieces[playerOne.selected].availableMoves[0]);
+    if (player.selected || player.selected === 0) {
         // Filter to find if clicked square is in available moves
-        var move = playerOne.pieces[playerOne.selected].availableMoves.filter(function (move) {
+        var move = player.pieces[player.selected].availableMoves.filter(function (move) {
             return move.x === square.x && move.y === square.y;
         });
-        console.log(move);
         // Check if clicked square is among available moves
         if (move[0]) {
             // Check if the square the player is moving to is occupied, and if so, if the occupant is an enemy piece
-            if (clickedPiece && clickedPiece.color != playerOne.color) {
+            if (clickedPiece && clickedPiece.color != player.color) {
                 // Capture the enemy piece
                 playerTwo.pieces[clickedPiece.id].alive = false;
             }
             // Set the position of the player's piece to the clicked square
-            playerOne.pieces[playerOne.selected].pos = square;
+            player.pieces[player.selected].pos = square;
             // Clear out the selected piece's available moves
-            playerOne.pieces[playerOne.selected].availableMoves = [];
+            player.pieces[player.selected].availableMoves = [];
             // Clear the player's selection
-            playerOne.selected = null;
+            player.selected = null;
             // Redraw the board
             drawBoard();
+            // Return true, to signify the turn is successfully completed
+            return true;
         }
         // If the player does not have a piece selected
     }
     else {
         // If the clicked square contains one of the player's pieces
-        if (clickedPiece && clickedPiece.color === playerOne.color) {
-            // Set the space of the selected piece to yellow
-            e.style.backgroundColor = 'yellow';
-            // See what spaces this piece can move to
-            clickedPiece.generateMoves();
-            // Highlight each possible space
-            clickedPiece.availableMoves.forEach(function (move) {
-                var availableSquare = document.getElementById("" + move.x + move.y);
-                // If the possible space contains an enemy, highlight in red
-                if (board[move.x][move.y]) {
-                    availableSquare.style.backgroundColor = 'red';
-                    // If it is empty, highlight in green
-                }
-                else {
-                    availableSquare.style.backgroundColor = 'green';
-                }
-            });
-            // Set the player's selection to the clicked piece
-            playerOne.selected = clickedPiece.id;
-            playerOne.pieces[playerOne.selected].availableMoves = clickedPiece.availableMoves;
+        if (clickedPiece && clickedPiece.color === player.color) {
+            // If no moves are available, disallow player from selecting the piece
+            if (clickedPiece.availableMoves.length) {
+                // Set the space of the selected piece to yellow
+                e.style.backgroundColor = 'yellow';
+                // Highlight each possible space
+                clickedPiece.availableMoves.forEach(function (move) {
+                    var availableSquare = document.getElementById("" + move.x + move.y);
+                    // If the possible space contains an enemy, highlight in red
+                    if (board[move.x][move.y]) {
+                        availableSquare.style.backgroundColor = 'red';
+                        // If it is empty, highlight in green
+                    }
+                    else {
+                        availableSquare.style.backgroundColor = 'green';
+                    }
+                });
+                // Set the player's selection to the clicked piece
+                player.selected = clickedPiece.id;
+                player.pieces[player.selected].availableMoves = clickedPiece.availableMoves;
+            }
+        }
+    }
+}
+function changeTurn(player) {
+    var board = document.getElementById(player.color + "board");
+    var turnheader = document.getElementById(player.color + "turn");
+    turnheader.innerText = 'Your Turn';
+}
+function clearTurn(player) {
+    var board = document.getElementById(player.color + "board");
+    var turnheader = document.getElementById(player.color + "turn");
+    turnheader.innerText = 'Opponent\'s Turn';
+}
+function pieceClicked(e, square) {
+    var turnHandled;
+    if (turnCount % 2 === 0) {
+        turnHandled = handleTurn(e, square, playerOne);
+    }
+    else {
+        turnHandled = handleTurn(e, square, playerTwo);
+    }
+    if (turnHandled) {
+        turnCount++;
+        generateAllAvailableMoves();
+        if (turnCount % 2 == 0) {
+            changeTurn(playerOne);
+            clearTurn(playerTwo);
+        }
+        else {
+            changeTurn(playerTwo);
+            clearTurn(playerOne);
         }
     }
 }
 drawBoard();
+generateAllAvailableMoves();

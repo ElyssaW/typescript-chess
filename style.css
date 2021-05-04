@@ -10,7 +10,20 @@
 body{
     background-color: brown;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+}
+
+.inline {
+    display: inline;
+}
+
+.playerboard {
+    width: 300px;
+}
+
+.board{
+    display: flex;
+    justify-content: space-between;
 }
 
 .white {

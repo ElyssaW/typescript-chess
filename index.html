@@ -8,8 +8,12 @@
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
-    
-    <div id="board">
+    <div id='whiteboard' class="inline playerboard">
+        <h2 id="whiteturn">Your Turn</h2>
+        <div id="whitecaptured"></div>
+    </div>
+
+    <div id="board" class="inline">
         <div class="row" id="row-0">
             <span id="00" class="square black" onclick="pieceClicked(this, {x:0, y:0})"></span>
             <span id="01" class="square white" onclick="pieceClicked(this, {x:0, y:1})"></span>
@@ -91,6 +95,12 @@
             <span id="77" class="square black" onclick="pieceClicked(this, {x:7, y:7})"></span>
         </div>
     </div>
+
+    <div id='blackboard' class="inline playerboard">
+        <h2 id="blackturn">Opponent's Turn</h2>
+        <div id="blackcaptured"></div>
+    </div>
+
     <script src='index.js'></script>
 </body>
 </html>
