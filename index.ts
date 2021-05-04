@@ -133,6 +133,9 @@ function checkDiagonal (x: number, y: number, pace:number) {
 
 // Initialize pieces
 class Piece {
+    // ID of piece
+    id: number
+
     // Name of the piece
     name: string
     
@@ -154,7 +157,8 @@ class Piece {
     // What spaces can the piece move to
     availableMoves = []
 
-    constructor(name: string, color: string, pos: {x: number, y: number}, pace: number) {
+    constructor(id: number, name: string, color: string, pos: {x: number, y: number}, pace: number) {
+        this.id = id
         this.name = name
         this.color = color
         this.pos = pos
@@ -168,8 +172,8 @@ class Piece {
 
 // Pawn
 class Pawn extends Piece {
-    constructor (color: string, pos: {x: number, y: number}, pace:number) {
-        super('Pawn', color, pos, pace)
+    constructor (id: number, color: string, pos: {x: number, y: number}) {
+        super(id, 'Pawn', color, pos, 1)
 
         this.generateMoves = () => {
             if (this.color === 'white') {
@@ -225,8 +229,8 @@ class Pawn extends Piece {
 
 // Rook
 class Rook extends Piece {
-    constructor (color: string, pos: {x: number, y: number}, pace:number) {
-        super('Rook', color, pos, pace)
+    constructor (id: number, color: string, pos: {x: number, y: number}) {
+        super(id, 'Rook', color, pos, board.length)
 
         this.generateMoves = () => {
             this.availableMoves = this.availableMoves.concat(checkCol(this.pos.x,this.pos.y, this.pace))
@@ -238,8 +242,8 @@ class Rook extends Piece {
 
 // Knight
 class Knight extends Piece {
-    constructor (color: string, pos: {x: number, y: number}, pace:number) {
-        super('Knight', color, pos, pace)
+    constructor (id: number, color: string, pos: {x: number, y: number}) {
+        super(id, 'Knight', color, pos, 3)
 
         this.generateMoves = () => {
             if (checkBoundary(this.pos.x+1,this.pos.y+2) && checkSquare(this.pos.x+1,this.pos.y+2)) {
@@ -282,8 +286,8 @@ class Knight extends Piece {
 
 // Bishop
 class Bishop extends Piece {
-    constructor (color: string, pos: {x: number, y: number}, pace:number) {
-        super('Bishop', color, pos, pace)
+    constructor (id: number, color: string, pos: {x: number, y: number}) {
+        super(id, 'Bishop', color, pos, board.length)
 
         this.generateMoves = () => {
             this.availableMoves = this.availableMoves.concat(checkDiagonal(this.pos.x,this.pos.y, this.pace))
@@ -293,8 +297,8 @@ class Bishop extends Piece {
 
 // Queen
 class Queen extends Piece {
-    constructor (color: string, pos: {x: number, y: number}, pace:number) {
-        super('Queen', color, pos, pace)
+    constructor (id: number, color: string, pos: {x: number, y: number}) {
+        super(id, 'Queen', color, pos, board.length)
 
         this.generateMoves = () => {
             this.availableMoves = this.availableMoves.concat(checkDiagonal(this.pos.x,this.pos.y, this.pace))
@@ -306,8 +310,8 @@ class Queen extends Piece {
 
 // King
 class King extends Piece {
-    constructor (color: string, pos: {x: number, y: number}, pace:number) {
-        super('King', color, pos, pace)
+    constructor (id: number, color: string, pos: {x: number, y: number}) {
+        super(id, 'King', color, pos, 1)
 
         this.generateMoves = () => {
             this.availableMoves = this.availableMoves.concat(checkDiagonal(this.pos.x,this.pos.y, this.pace))
@@ -328,72 +332,83 @@ class Player {
     color: string
     pieces = []
     capturedPieces = []
+    selected: number
 
     constructor(name: string, color: string) {
         this.name = name
         this.color = color
     }
 
+    selectPiece (piece: Piece) {
+        piece.generateMoves()
+        this.selected = piece.id
+    }
+
+    movePiece (pos: {x:number, y: number}) {
+        this.pieces[this.selected].pos = pos
+        this.selected = null
+    }
+
     createPieces (backRow:number, frontRow:number) {
         // Create Pawns
         this.pieces.push(
-            new Pawn(this.color, {x:0, y:frontRow}, 1)
+            new Pawn(0, this.color, {x:0, y:frontRow})
         )
         this.pieces.push(
-            new Pawn(this.color, {x:1, y:frontRow}, 1)
+            new Pawn(1, this.color, {x:1, y:frontRow})
         )
         this.pieces.push(
-            new Pawn(this.color, {x:2, y:frontRow}, 1)
+            new Pawn(2, this.color, {x:2, y:frontRow})
         )
         this.pieces.push(
-            new Pawn(this.color, {x:3, y:frontRow}, 1)
+            new Pawn(3, this.color, {x:3, y:frontRow})
         )
         this.pieces.push(
-            new Pawn(this.color, {x:4, y:frontRow}, 1)
+            new Pawn(4, this.color, {x:4, y:frontRow})
         )
         this.pieces.push(
-            new Pawn(this.color, {x:5, y:frontRow}, 1)
+            new Pawn(5, this.color, {x:5, y:frontRow})
         )
         this.pieces.push(
-            new Pawn(this.color, {x:6, y:frontRow}, 1)
+            new Pawn(6, this.color, {x:6, y:frontRow})
         )
         this.pieces.push(
-            new Pawn(this.color, {x:7, y:frontRow}, 1)
+            new Pawn(7, this.color, {x:7, y:frontRow})
         )
 
         // Create other pieces
         // Rooks
         this.pieces.push(
-            new Rook(this.color, {x:0, y:backRow}, board.length)
+            new Rook(8, this.color, {x:0, y:backRow})
         )
         this.pieces.push(
-            new Rook(this.color, {x:7, y:backRow}, board.length)
+            new Rook(9, this.color, {x:7, y:backRow})
         )
 
         //Knights
         this.pieces.push(
-            new Knight(this.color, {x:1, y:backRow}, board.length)
+            new Knight(10, this.color, {x:1, y:backRow})
         )
         this.pieces.push(
-            new Knight(this.color, {x:6, y:backRow}, board.length)
+            new Knight(11, this.color, {x:6, y:backRow})
         )
 
         // Bishops
         this.pieces.push(
-            new Bishop(this.color, {x:2, y:backRow}, board.length)
+            new Bishop(12, this.color, {x:2, y:backRow})
         )
         this.pieces.push(
-            new Bishop(this.color, {x:5, y:backRow}, board.length)
+            new Bishop(13, this.color, {x:5, y:backRow})
         )
 
         // Queen
         this.pieces.push(
-            new Queen(this.color, {x:4, y:backRow}, board.length)
+            new Queen(14, this.color, {x:4, y:backRow})
         )
 
         // King
         this.pieces.push(
-            new King(this.color, {x:3, y:backRow}, 1)
+            new King(15, this.color, {x:3, y:backRow})
         )
     }
 }
@@ -405,17 +420,34 @@ playerTwo.createPieces(7, 6)
 
 function drawBoard() {
 
-    function drawPlayerPieces(player) {
+    function clearBoard() {
+        board.forEach((row, rowIndex) => {
+            row.forEach((col, colIndex) => {
+                let square = document.getElementById(`${rowIndex}${colIndex}`)
+                square.style.backgroundImage = 'none'
+                board[rowIndex][colIndex] = {}
+            })
+        })
+    }
+
+    function drawPlayerPieces(player: Player) {
         player.pieces.forEach(piece => {
             if (piece.alive) {
                 let square = document.getElementById(`${piece.pos.x}${piece.pos.y}`)
                 square.style.backgroundImage = `url('images/${piece.color}${piece.name.toLowerCase()}.png')`
+                board[piece.pos.x][piece.pos.y] = piece
             }
         });
     }
 
+    clearBoard()
     drawPlayerPieces(playerOne)
     drawPlayerPieces(playerTwo)
+}
+
+function pieceClicked (square:{x:number, y:number}) {
+    console.log('clicked')
+    console.log(square)
 }
 
 drawBoard()
