@@ -185,6 +185,9 @@ class Piece {
     // Whether the piece is alive or dead
     alive = true
 
+    // Check whether the piece has moved or if it's still in its initial starting position
+    hasMoved = false
+
     // What spaces can the piece move to
     availableMoves = []
 
@@ -208,6 +211,15 @@ class Pawn extends Piece {
         super(id, 'Pawn', color, pos, color  == 'white' ? 1 : -1)
 
         this.generateMoves = () => {
+
+            if (!this.hasMoved) {
+                if (checkBoundary(this.pos.x, this.pos.y + (this.pace*2))) {
+                    this.availableMoves.push({
+                        x: this.pos.x,
+                        y: this.pos.y + (this.pace*2)
+                    })
+                }
+            }
 
             if (checkBoundary(this.pos.x, this.pos.y + this.pace)) {
                 this.availableMoves.push({
@@ -354,8 +366,10 @@ class Player {
         this.capturedPieces.push(piece)
 
         let captured = document.getElementById(`${this.color}captured`)
+        console.log(captured)
         let newCapture = document.createElement('span')
-        newCapture.className = `square ${piece.color}${piece.name}`
+        newCapture.className = `square ${piece.color}${piece.name.toLowerCase()}`
+        console.log(newCapture)
 
         captured.appendChild(newCapture)
     }
@@ -511,6 +525,8 @@ function handleTurn (e, square:{x:number, y:number}, player: Player, opponent: P
             player.pieces[player.selected].pos = square
             // Clear out the selected piece's available moves
             player.pieces[player.selected].availableMoves = []
+            // Set the piece's hasMoved to ture
+            player.pieces[player.selected].hasMoved = true
             // Clear the player's selection
             player.selected = null
             // Redraw the board
