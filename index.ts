@@ -33,98 +33,127 @@ function checkSquare(x: number, y: number) {
     }
 }
 
-function checkCol(x: number, y: number, pace:number) {
+function checkCol(piece: Piece) {
     let moves = []
 
-    for (let i = 0; i < pace; i++) {
-        if (checkBoundary(x, y+i)) {
-            moves.push({x: x, y: y+i})
+    for (let i = 1; i < piece.pace; i++) {
+        if (checkBoundary(piece.pos.x, piece.pos.y+i)) {
 
-            if (checkSquare(x, y+i)) {
+            if (checkSquare(piece.pos.x, piece.pos.y+i)) {
+                if (piece.color != checkSquare(piece.pos.x, piece.pos.y+i).color) {
+                    moves.push({x: piece.pos.x, y: piece.pos.y+i})
+                }
                 break;
             }
+
+            moves.push({x: piece.pos.x, y: piece.pos.y+i})
         }
     }
 
-    for (let i = 0; i < pace; i++) {
-        if (checkBoundary(x, y-i)) {
-            moves.push({x: x, y: y-i})
+    for (let i = 1; i < piece.pace; i++) {
+        if (checkBoundary(piece.pos.x, piece.pos.y-i)) {
 
-            if (checkSquare(x, y-i)) {
+            if (checkSquare(piece.pos.x, piece.pos.y-i)) {
+                if (piece.color != checkSquare(piece.pos.x, piece.pos.y-i).color) {
+                    moves.push({x: piece.pos.x, y: piece.pos.y-i})
+                }
                 break;
             }
+
+            moves.push({x: piece.pos.x, y: piece.pos.y-i})
         }
     }
 
     return moves
 }
 
-function checkRow (x: number, y: number, pace:number) {
+function checkRow (piece: Piece) {
     let moves = []
 
-    for (let i = 0; i < pace; i++) {
-        if (checkBoundary(x+i, y)) {
-            moves.push({x: x+i, y: y})
+    for (let i = 1; i < piece.pace; i++) {
+        if (checkBoundary(piece.pos.x+i, piece.pos.y)) {
 
-            if (checkSquare(x+i, y)) {
+            if (checkSquare(piece.pos.x+i, piece.pos.y)) {
+                if (piece.color != checkSquare(piece.pos.x+i, piece.pos.y).color) {
+                    moves.push({x: piece.pos.x+i, y: piece.pos.y})
+                }
                 break;
             }
+    
+            moves.push({x: piece.pos.x+i, y: piece.pos.y})
         }
     }
 
-    for (let i = 0; i < 8; i++) {
-        if (checkBoundary(x-i, y)) {
-            moves.push({x: x-i, y: y})
-
-            if (checkSquare(x-i, y)) {
+    for (let i = 1; i < piece.pace; i++) {
+        if (checkBoundary(piece.pos.x-i, piece.pos.y)) {
+            
+            if (checkSquare(piece.pos.x-i, piece.pos.y)) {
+                if (piece.color != checkSquare(piece.pos.x-i, piece.pos.y).color) {
+                    moves.push({x: piece.pos.x-i, y: piece.pos.y})
+                }
                 break;
             }
+    
+            moves.push({x: piece.pos.x-i, y: piece.pos.y})
         }
     }
 
     return moves
 }
 
-function checkDiagonal (x: number, y: number, pace:number) {
+function checkDiagonal (piece: Piece) {
     let moves = []
 
-    for (let i = 0; i < pace; i++) {
-        if (checkBoundary(x-i, y+i)) {
-            moves.push({x: x-i, y: y+i})
+    for (let i = 1; i < piece.pace; i++) {
+        if (checkBoundary(piece.pos.x-i, piece.pos.y+i)) {
 
-            if (checkSquare(x-i, y+i)) {
+            if (checkSquare(piece.pos.x-i, piece.pos.y+i)) {
+                if (piece.color != checkSquare(piece.pos.x-i, piece.pos.y+i).color) {
+                    moves.push({x: piece.pos.x-i, y: piece.pos.y+i})
+                }
                 break;
             }
+
+            moves.push({x: piece.pos.x-i, y: piece.pos.y+i})
         }
     }
 
-    for (let i = 0; i < pace; i++) {
-        if (checkBoundary(x+i, y-i)) {
-            moves.push({x: x+i, y: y-i})
-
-            if (checkSquare(x+i, y-i)) {
+    for (let i = 1; i < piece.pace; i++) {
+        if (checkBoundary(piece.pos.x+i, piece.pos.y-i)) {
+            if (checkSquare(piece.pos.x+i, piece.pos.y-i)) {
+                if (piece.color != checkSquare(piece.pos.x+i, piece.pos.y-i).color) {
+                    moves.push({x: piece.pos.x+i, y: piece.pos.y-i})
+                }
                 break;
             }
+
+            moves.push({x: piece.pos.x+i, y: piece.pos.y-i})
         }
     }
 
-    for (let i = 0; i < pace; i++) {
-        if (checkBoundary(x-i, y-i)) {
-            moves.push({x: x-i, y: y-i})
-
-            if (checkSquare(x-i, y-i)) {
+    for (let i = 1; i < piece.pace; i++) {
+        if (checkBoundary(piece.pos.x+i, piece.pos.y+i)) {
+            if (checkSquare(piece.pos.x+i, piece.pos.y+i)) {
+                if (piece.color != checkSquare(piece.pos.x+i, piece.pos.y+i).color) {
+                    moves.push({x: piece.pos.x+i, y: piece.pos.y+i})
+                }
                 break;
             }
+
+            moves.push({x: piece.pos.x+i, y: piece.pos.y+i})
         }
     }
 
-    for (let i = 0; i < pace; i++) {
-        if (checkBoundary(x-i, y-i)) {
-            moves.push({x: x-i, y: y-i})
-
-            if (checkSquare(x-i, y-i)) {
+    for (let i = 1; i < piece.pace; i++) {
+        if (checkBoundary(piece.pos.x-i, piece.pos.y-i)) {
+            if (checkSquare(piece.pos.x-i, piece.pos.y-i)) {
+                if (piece.color != checkSquare(piece.pos.x-i, piece.pos.y-i).color) {
+                    moves.push({x: piece.pos.x-i, y: piece.pos.y-i})
+                }
                 break;
             }
+
+            moves.push({x: piece.pos.x-i, y: piece.pos.y-i})
         }
     }
 
@@ -208,8 +237,8 @@ class Rook extends Piece {
         super(id, 'Rook', color, pos, board.length)
 
         this.generateMoves = () => {
-            this.availableMoves = this.availableMoves.concat(checkCol(this.pos.x,this.pos.y, this.pace))
-            this.availableMoves = this.availableMoves.concat(checkRow(this.pos.x,this.pos.y, this.pace))
+            this.availableMoves = this.availableMoves.concat(checkCol(this))
+            this.availableMoves = this.availableMoves.concat(checkRow(this))
         }
 
     }
@@ -221,38 +250,38 @@ class Knight extends Piece {
         super(id, 'Knight', color, pos, 3)
 
         this.generateMoves = () => {
-            if (checkBoundary(this.pos.x+1,this.pos.y+2) && checkSquare(this.pos.x+1,this.pos.y+2)) {
+            if (checkBoundary(this.pos.x+1,this.pos.y+2)) {
                 this.availableMoves.push({x: this.pos.x+1, y: this.pos.y+2})
             }
 
-            if (checkBoundary(this.pos.x+2,this.pos.y+1) && checkSquare(this.pos.x+2,this.pos.y+1)) {
+            if (checkBoundary(this.pos.x+2,this.pos.y+1)) {
                 this.availableMoves.push({x: this.pos.x+2, y: this.pos.y+1})
             }
 
             //===============
-            if (checkBoundary(this.pos.x-1,this.pos.y+2) && checkSquare(this.pos.x-1,this.pos.y+2)) {
+            if (checkBoundary(this.pos.x-1,this.pos.y+2)) {
                 this.availableMoves.push({x: this.pos.x-1, y: this.pos.y+2})
             }
 
-            if (checkBoundary(this.pos.x-2,this.pos.y+1) && checkSquare(this.pos.x-2,this.pos.y+1)) {
+            if (checkBoundary(this.pos.x-2,this.pos.y+1)) {
                 this.availableMoves.push({x: this.pos.x-2, y: this.pos.y+1})
             }
 
             //===============
-            if (checkBoundary(this.pos.x+1,this.pos.y-2) && checkSquare(this.pos.x+1,this.pos.y-2)) {
+            if (checkBoundary(this.pos.x+1,this.pos.y-2)) {
                 this.availableMoves.push({x: this.pos.x+1, y: this.pos.y-2})
             }
             
-            if (checkBoundary(this.pos.x+2,this.pos.y-1) && checkSquare(this.pos.x+2,this.pos.y-1)) {
+            if (checkBoundary(this.pos.x+2,this.pos.y-1)) {
                 this.availableMoves.push({x: this.pos.x+2, y: this.pos.y-1})
             }
 
             //================
-            if (checkBoundary(this.pos.x-1,this.pos.y-2) && checkSquare(this.pos.x-1,this.pos.y-2)) {
+            if (checkBoundary(this.pos.x-1,this.pos.y-2)) {
                 this.availableMoves.push({x: this.pos.x-1, y: this.pos.y-2})
             }
 
-            if (checkBoundary(this.pos.x-2,this.pos.y-1) && checkSquare(this.pos.x-2,this.pos.y-1)) {
+            if (checkBoundary(this.pos.x-2,this.pos.y-1)) {
                 this.availableMoves.push({x: this.pos.x-2, y: this.pos.y-1})
             }
         }
@@ -265,7 +294,7 @@ class Bishop extends Piece {
         super(id, 'Bishop', color, pos, board.length)
 
         this.generateMoves = () => {
-            this.availableMoves = this.availableMoves.concat(checkDiagonal(this.pos.x,this.pos.y, this.pace))
+            this.availableMoves = this.availableMoves.concat(checkDiagonal(this))
         }
     }
 }
@@ -276,9 +305,9 @@ class Queen extends Piece {
         super(id, 'Queen', color, pos, board.length)
 
         this.generateMoves = () => {
-            this.availableMoves = this.availableMoves.concat(checkDiagonal(this.pos.x,this.pos.y, this.pace))
-            this.availableMoves = this.availableMoves.concat(checkCol(this.pos.x,this.pos.y, this.pace))
-            this.availableMoves = this.availableMoves.concat(checkRow(this.pos.x,this.pos.y, this.pace))
+            this.availableMoves = this.availableMoves.concat(checkDiagonal(this))
+            this.availableMoves = this.availableMoves.concat(checkCol(this))
+            this.availableMoves = this.availableMoves.concat(checkRow(this))
         }
     }
 }
@@ -286,12 +315,12 @@ class Queen extends Piece {
 // King
 class King extends Piece {
     constructor (id: number, color: string, pos: {x: number, y: number}) {
-        super(id, 'King', color, pos, 1)
+        super(id, 'King', color, pos, 2)
 
         this.generateMoves = () => {
-            this.availableMoves = this.availableMoves.concat(checkDiagonal(this.pos.x,this.pos.y, this.pace))
-            this.availableMoves = this.availableMoves.concat(checkCol(this.pos.x,this.pos.y, this.pace))
-            this.availableMoves = this.availableMoves.concat(checkRow(this.pos.x,this.pos.y, this.pace))
+            this.availableMoves = this.availableMoves.concat(checkDiagonal(this))
+            this.availableMoves = this.availableMoves.concat(checkCol(this))
+            this.availableMoves = this.availableMoves.concat(checkRow(this))
         }
     }
 }
@@ -396,18 +425,26 @@ playerTwo.createPieces(7, 6)
 function drawBoard() {
 
     function clearBoard() {
-        board.forEach((row, rowIndex) => {
-            row.forEach((col, colIndex) => {
-                let square = document.getElementById(`${rowIndex}${colIndex}`)
+
+        for (let i = 0; i < 8; i++) {
+            for (let j = 0; j < 8; j++) {
+                let square = document.getElementById(`${i}${j}`)
                 square.style.backgroundImage = 'none'
 
-                if(rowIndex % 2 == 0 && colIndex % 2 == 1 || rowIndex % 2 == 1 && colIndex % 2 == 0) {
+                if (i % 2 == 0 && j % 2 == 1 || i % 2 == 1 && j % 2 == 0) {
                     square.style.backgroundColor = 'white'
                 } else {
                     square.style.backgroundColor = 'black'
                 }
-            })
-        })
+                console.log(square)
+
+                // if(i % 2 === 0) {
+                //     square.style.backgroundColor = 'white'
+                // } else {
+                //     square.style.backgroundColor = 'black'
+                // }
+            }
+        }
 
         board = createBoard()
     }
@@ -429,37 +466,62 @@ function drawBoard() {
 
 function pieceClicked (e, square:{x:number, y:number}) {
     console.log('clicked')
+    console.log(square)
+
+    // Check if the square clicked on contains a piece
+    let clickedPiece: Piece
+    if (board[square.x][square.y]) {
+        clickedPiece = board[square.x][square.y]
+    }
     
-    if (playerOne.selected) {
-        if (board[square.x][square.y] && board[square.x][square.y].color != playerOne.color) {
-            playerTwo.pieces[board[square.x][square.y].id].alive = false
-            playerOne.capturedPieces.push(playerTwo.pieces[board[square.x][square.y].id])
+    // Check if the player currently has a piece selected
+    if (playerOne.selected || playerOne.selected === 0) {
+        console.log('Moving...')
+        console.log(playerOne.selected)
+
+        // Check if the square the player is moving to is occupied, and if so, if the occupant is an enemy piece
+        if (clickedPiece && clickedPiece.color != playerOne.color) {
+            // Capture the enemy piece
+            playerTwo.pieces[clickedPiece.id].alive = false
         }
+
+        // Set the position of the player's piece to the clicked square
         playerOne.pieces[playerOne.selected].pos = square
+        // Clear out the selected piece's available moves
         playerOne.pieces[playerOne.selected].availableMoves = []
+        // Clear the player's selection
         playerOne.selected = null
+        // Redraw the board
         drawBoard()
 
+    // If the player does not have a piece selected
     } else {
-        if (board[square.x][square.y] && board[square.x][square.y].color === playerOne.color) {
-            let selectedPiece = board[square.x][square.y]
-            selectedPiece.generateMoves()
-            console.log(selectedPiece.availableMoves)
+        // If the clicked square contains one of the player's pieces
+        if (clickedPiece && clickedPiece.color === playerOne.color) {
+            
+            // Set the space of the selected piece to yellow
+            e.style.backgroundColor = 'yellow'
+
+            // See what spaces this piece can move to
+            clickedPiece.generateMoves()
+            console.log(clickedPiece.availableMoves)
     
-            selectedPiece.availableMoves.forEach((move) => {
+            // Highlight each possible space
+            clickedPiece.availableMoves.forEach((move) => {
                 let availableSquare = document.getElementById(`${move.x}${move.y}`)
     
+                // If the possible space contains an enemy, highlight in red
                 if (board[move.x][move.y]) {
                     availableSquare.style.backgroundColor = 'red'
+
+                // If it is empty, highlight in green
                 } else {
                     availableSquare.style.backgroundColor = 'green'
                 }
             });
     
-            e.style.backgroundColor = 'yellow'
-    
-            playerOne.selected = selectedPiece.id
-            selectedPiece.availableMoves = []
+            // Set the player's selection to the clicked piece
+            playerOne.selected = clickedPiece.id
         }
     }
 }
