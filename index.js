@@ -310,7 +310,7 @@ var Player = /** @class */ (function () {
         // Queen
         this.pieces.push(new Queen(this.color, { x: 4, y: backRow }, board.length));
         // King
-        this.pieces.push(new King(this.color, { x: 5, y: backRow }, 1));
+        this.pieces.push(new King(this.color, { x: 3, y: backRow }, 1));
     };
     return Player;
 }());
@@ -318,3 +318,16 @@ var playerOne = new Player('Elyssa', 'white');
 playerOne.createPieces(0, 1);
 var playerTwo = new Player('Guest', 'black');
 playerTwo.createPieces(7, 6);
+function drawBoard() {
+    function drawPlayerPieces(player) {
+        player.pieces.forEach(function (piece) {
+            if (piece.alive) {
+                var square = document.getElementById("" + piece.pos.x + piece.pos.y);
+                square.style.backgroundImage = "url('images/" + piece.color + piece.name.toLowerCase() + ".png')";
+            }
+        });
+    }
+    drawPlayerPieces(playerOne);
+    drawPlayerPieces(playerTwo);
+}
+drawBoard();

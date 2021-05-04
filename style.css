@@ -2,6 +2,9 @@
     min-width: 80px;
     min-height: 80px;
     display: inline-block;
+    background-position: center;
+    background-repeat: no-repeat;
+    object-fit: cover;
 }
 
 body{
@@ -16,4 +19,52 @@ body{
 
 .black {
     background-color: black;
+}
+
+.whitepawn {
+    background-image: url('images/whitepawn.png');
+}
+
+.blackpawn {
+    background-image: url('images/blackpawn.png');
+}
+
+.whiterook {
+    background-image: url('images/whiterook.png');
+}
+
+.blackrook {
+    background-image: url('images/blackrook.png');
+}
+
+.whiteknight {
+    background-image: url('images/whiteknight.png');
+}
+
+.blackknight {
+    background-image: url('images/blackknight.png');
+}
+
+.whitebishop {
+    background-image: url('images/whitebishop.png');
+}
+
+.blackbishop {
+    background-image: url('images/blackbishop.png');
+}
+
+.whitequeen {
+    background-image: url('images/whitequeen.png');
+}
+
+.blackqueen {
+    background-image: url('images/blackqueen.png');
+}
+
+.whiteking {
+    background-image: url('images/whiteking.png');
+}
+
+.blackking {
+    background-image: url('images/blackking.png');
 }

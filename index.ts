@@ -393,7 +393,7 @@ class Player {
 
         // King
         this.pieces.push(
-            new King(this.color, {x:5, y:backRow}, 1)
+            new King(this.color, {x:3, y:backRow}, 1)
         )
     }
 }
@@ -402,3 +402,20 @@ let playerOne = new Player('Elyssa', 'white')
 playerOne.createPieces(0, 1)
 let playerTwo = new Player('Guest', 'black')
 playerTwo.createPieces(7, 6)
+
+function drawBoard() {
+
+    function drawPlayerPieces(player) {
+        player.pieces.forEach(piece => {
+            if (piece.alive) {
+                let square = document.getElementById(`${piece.pos.x}${piece.pos.y}`)
+                square.style.backgroundImage = `url('images/${piece.color}${piece.name.toLowerCase()}.png')`
+            }
+        });
+    }
+
+    drawPlayerPieces(playerOne)
+    drawPlayerPieces(playerTwo)
+}
+
+drawBoard()
