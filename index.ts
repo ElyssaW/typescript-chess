@@ -173,55 +173,30 @@ class Piece {
 // Pawn
 class Pawn extends Piece {
     constructor (id: number, color: string, pos: {x: number, y: number}) {
-        super(id, 'Pawn', color, pos, 1)
+        
+        super(id, 'Pawn', color, pos, color  == 'white' ? 1 : -1)
 
         this.generateMoves = () => {
-            if (this.color === 'white') {
 
-                if (checkBoundary(this.pos.x, this.pos.y++) && !checkSquare(this.pos.x, this.pos.y++)) {
-                    this.availableMoves.push({
-                        x: this.pos.x,
-                        y: this.pos.y++
-                    })
-                }
+            if (checkBoundary(this.pos.x, this.pos.y + this.pace)) {
+                this.availableMoves.push({
+                    x: this.pos.x,
+                    y: this.pos.y + this.pace
+                })
+            }
 
-                if (checkBoundary(this.pos.x++, this.pos.y++) && checkSquare(this.pos.x++, this.pos.y++)) {
-                    this.availableMoves.push({
-                        x: this.pos.x++,
-                        y: this.pos.y++
-                    })
-                }
+            if (checkBoundary(this.pos.x + 1, this.pos.y + this.pace) && checkSquare(this.pos.x + 1, this.pos.y + this.pace)) {
+                this.availableMoves.push({
+                    x: this.pos.x + 1,
+                    y: this.pos.y + this.pace
+                })
+            }
 
-                if (checkBoundary(this.pos.x--, this.pos.y++) && checkSquare(this.pos.x--, this.pos.y++)) {
-                    this.availableMoves.push({
-                        x: this.pos.x--,
-                        y: this.pos.y++
-                    })
-                }
-
-            } else {
-
-                if (checkBoundary(this.pos.x, this.pos.y--) && !checkSquare(this.pos.x, this.pos.y--)) {
-                    this.availableMoves.push({
-                        x: this.pos.x,
-                        y: this.pos.y--
-                    })
-                }
-
-                if (checkBoundary(this.pos.x++, this.pos.y--) && checkSquare(this.pos.x++, this.pos.y--)) {
-                    this.availableMoves.push({
-                        x: this.pos.x++,
-                        y: this.pos.y--
-                    })
-                }
-
-                if (checkBoundary(this.pos.x--, this.pos.y--) && checkSquare(this.pos.x--, this.pos.y--)) {
-                    this.availableMoves.push({
-                        x: this.pos.x--,
-                        y: this.pos.y--
-                    })
-                }
-
+            if (checkBoundary(this.pos.x - 1, this.pos.y + this.pace) && checkSquare(this.pos.x - 1, this.pos.y + this.pace)) {
+                this.availableMoves.push({
+                    x: this.pos.x - 1,
+                    y: this.pos.y + this.pace
+                })
             }
         }
     }
@@ -425,9 +400,16 @@ function drawBoard() {
             row.forEach((col, colIndex) => {
                 let square = document.getElementById(`${rowIndex}${colIndex}`)
                 square.style.backgroundImage = 'none'
-                board[rowIndex][colIndex] = {}
+
+                if(rowIndex % 2 == 0 && colIndex % 2 == 1 || rowIndex % 2 == 1 && colIndex % 2 == 0) {
+                    square.style.backgroundColor = 'white'
+                } else {
+                    square.style.backgroundColor = 'black'
+                }
             })
         })
+
+        board = createBoard()
     }
 
     function drawPlayerPieces(player: Player) {
@@ -445,9 +427,41 @@ function drawBoard() {
     drawPlayerPieces(playerTwo)
 }
 
-function pieceClicked (square:{x:number, y:number}) {
+function pieceClicked (e, square:{x:number, y:number}) {
     console.log('clicked')
-    console.log(square)
+    
+    if (playerOne.selected) {
+        if (board[square.x][square.y] && board[square.x][square.y].color != playerOne.color) {
+            playerTwo.pieces[board[square.x][square.y].id].alive = false
+            playerOne.capturedPieces.push(playerTwo.pieces[board[square.x][square.y].id])
+        }
+        playerOne.pieces[playerOne.selected].pos = square
+        playerOne.pieces[playerOne.selected].availableMoves = []
+        playerOne.selected = null
+        drawBoard()
+
+    } else {
+        if (board[square.x][square.y] && board[square.x][square.y].color === playerOne.color) {
+            let selectedPiece = board[square.x][square.y]
+            selectedPiece.generateMoves()
+            console.log(selectedPiece.availableMoves)
+    
+            selectedPiece.availableMoves.forEach((move) => {
+                let availableSquare = document.getElementById(`${move.x}${move.y}`)
+    
+                if (board[move.x][move.y]) {
+                    availableSquare.style.backgroundColor = 'red'
+                } else {
+                    availableSquare.style.backgroundColor = 'green'
+                }
+            });
+    
+            e.style.backgroundColor = 'yellow'
+    
+            playerOne.selected = selectedPiece.id
+            selectedPiece.availableMoves = []
+        }
+    }
 }
 
 drawBoard()

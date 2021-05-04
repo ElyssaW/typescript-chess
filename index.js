@@ -139,47 +139,25 @@ var Piece = /** @class */ (function () {
 var Pawn = /** @class */ (function (_super) {
     __extends(Pawn, _super);
     function Pawn(id, color, pos) {
-        var _this = _super.call(this, id, 'Pawn', color, pos, 1) || this;
+        var _this = _super.call(this, id, 'Pawn', color, pos, color == 'white' ? 1 : -1) || this;
         _this.generateMoves = function () {
-            if (_this.color === 'white') {
-                if (checkBoundary(_this.pos.x, _this.pos.y++) && !checkSquare(_this.pos.x, _this.pos.y++)) {
-                    _this.availableMoves.push({
-                        x: _this.pos.x,
-                        y: _this.pos.y++
-                    });
-                }
-                if (checkBoundary(_this.pos.x++, _this.pos.y++) && checkSquare(_this.pos.x++, _this.pos.y++)) {
-                    _this.availableMoves.push({
-                        x: _this.pos.x++,
-                        y: _this.pos.y++
-                    });
-                }
-                if (checkBoundary(_this.pos.x--, _this.pos.y++) && checkSquare(_this.pos.x--, _this.pos.y++)) {
-                    _this.availableMoves.push({
-                        x: _this.pos.x--,
-                        y: _this.pos.y++
-                    });
-                }
+            if (checkBoundary(_this.pos.x, _this.pos.y + _this.pace)) {
+                _this.availableMoves.push({
+                    x: _this.pos.x,
+                    y: _this.pos.y + _this.pace
+                });
             }
-            else {
-                if (checkBoundary(_this.pos.x, _this.pos.y--) && !checkSquare(_this.pos.x, _this.pos.y--)) {
-                    _this.availableMoves.push({
-                        x: _this.pos.x,
-                        y: _this.pos.y--
-                    });
-                }
-                if (checkBoundary(_this.pos.x++, _this.pos.y--) && checkSquare(_this.pos.x++, _this.pos.y--)) {
-                    _this.availableMoves.push({
-                        x: _this.pos.x++,
-                        y: _this.pos.y--
-                    });
-                }
-                if (checkBoundary(_this.pos.x--, _this.pos.y--) && checkSquare(_this.pos.x--, _this.pos.y--)) {
-                    _this.availableMoves.push({
-                        x: _this.pos.x--,
-                        y: _this.pos.y--
-                    });
-                }
+            if (checkBoundary(_this.pos.x + 1, _this.pos.y + _this.pace) && checkSquare(_this.pos.x + 1, _this.pos.y + _this.pace)) {
+                _this.availableMoves.push({
+                    x: _this.pos.x + 1,
+                    y: _this.pos.y + _this.pace
+                });
+            }
+            if (checkBoundary(_this.pos.x - 1, _this.pos.y + _this.pace) && checkSquare(_this.pos.x - 1, _this.pos.y + _this.pace)) {
+                _this.availableMoves.push({
+                    x: _this.pos.x - 1,
+                    y: _this.pos.y + _this.pace
+                });
             }
         };
         return _this;
@@ -333,9 +311,15 @@ function drawBoard() {
             row.forEach(function (col, colIndex) {
                 var square = document.getElementById("" + rowIndex + colIndex);
                 square.style.backgroundImage = 'none';
-                board[rowIndex][colIndex] = {};
+                if (rowIndex % 2 == 0 && colIndex % 2 == 1 || rowIndex % 2 == 1 && colIndex % 2 == 0) {
+                    square.style.backgroundColor = 'white';
+                }
+                else {
+                    square.style.backgroundColor = 'black';
+                }
             });
         });
+        board = createBoard();
     }
     function drawPlayerPieces(player) {
         player.pieces.forEach(function (piece) {
@@ -350,8 +334,36 @@ function drawBoard() {
     drawPlayerPieces(playerOne);
     drawPlayerPieces(playerTwo);
 }
-function pieceClicked(square) {
+function pieceClicked(e, square) {
     console.log('clicked');
-    console.log(square);
+    if (playerOne.selected) {
+        if (board[square.x][square.y] && board[square.x][square.y].color != playerOne.color) {
+            playerTwo.pieces[board[square.x][square.y].id].alive = false;
+            playerOne.capturedPieces.push(playerTwo.pieces[board[square.x][square.y].id]);
+        }
+        playerOne.pieces[playerOne.selected].pos = square;
+        playerOne.pieces[playerOne.selected].availableMoves = [];
+        playerOne.selected = null;
+        drawBoard();
+    }
+    else {
+        if (board[square.x][square.y] && board[square.x][square.y].color === playerOne.color) {
+            var selectedPiece = board[square.x][square.y];
+            selectedPiece.generateMoves();
+            console.log(selectedPiece.availableMoves);
+            selectedPiece.availableMoves.forEach(function (move) {
+                var availableSquare = document.getElementById("" + move.x + move.y);
+                if (board[move.x][move.y]) {
+                    availableSquare.style.backgroundColor = 'red';
+                }
+                else {
+                    availableSquare.style.backgroundColor = 'green';
+                }
+            });
+            e.style.backgroundColor = 'yellow';
+            playerOne.selected = selectedPiece.id;
+            selectedPiece.availableMoves = [];
+        }
+    }
 }
 drawBoard();
