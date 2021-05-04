@@ -436,13 +436,6 @@ function drawBoard() {
                 } else {
                     square.style.backgroundColor = 'black'
                 }
-                console.log(square)
-
-                // if(i % 2 === 0) {
-                //     square.style.backgroundColor = 'white'
-                // } else {
-                //     square.style.backgroundColor = 'black'
-                // }
             }
         }
 
@@ -476,23 +469,34 @@ function pieceClicked (e, square:{x:number, y:number}) {
     
     // Check if the player currently has a piece selected
     if (playerOne.selected || playerOne.selected === 0) {
-        console.log('Moving...')
-        console.log(playerOne.selected)
 
-        // Check if the square the player is moving to is occupied, and if so, if the occupant is an enemy piece
-        if (clickedPiece && clickedPiece.color != playerOne.color) {
-            // Capture the enemy piece
-            playerTwo.pieces[clickedPiece.id].alive = false
+        console.log(playerOne.pieces[playerOne.selected].availableMoves[0])
+
+        // Filter to find if clicked square is in available moves
+        let move = playerOne.pieces[playerOne.selected].availableMoves.filter(move => {
+            return move.x === square.x && move.y === square.y
+        })
+
+        console.log(move)
+
+        // Check if clicked square is among available moves
+        if (move[0]) {
+
+            // Check if the square the player is moving to is occupied, and if so, if the occupant is an enemy piece
+            if (clickedPiece && clickedPiece.color != playerOne.color) {
+                // Capture the enemy piece
+                playerTwo.pieces[clickedPiece.id].alive = false
+            }
+
+            // Set the position of the player's piece to the clicked square
+            playerOne.pieces[playerOne.selected].pos = square
+            // Clear out the selected piece's available moves
+            playerOne.pieces[playerOne.selected].availableMoves = []
+            // Clear the player's selection
+            playerOne.selected = null
+            // Redraw the board
+            drawBoard()
         }
-
-        // Set the position of the player's piece to the clicked square
-        playerOne.pieces[playerOne.selected].pos = square
-        // Clear out the selected piece's available moves
-        playerOne.pieces[playerOne.selected].availableMoves = []
-        // Clear the player's selection
-        playerOne.selected = null
-        // Redraw the board
-        drawBoard()
 
     // If the player does not have a piece selected
     } else {
@@ -504,7 +508,6 @@ function pieceClicked (e, square:{x:number, y:number}) {
 
             // See what spaces this piece can move to
             clickedPiece.generateMoves()
-            console.log(clickedPiece.availableMoves)
     
             // Highlight each possible space
             clickedPiece.availableMoves.forEach((move) => {
@@ -522,6 +525,7 @@ function pieceClicked (e, square:{x:number, y:number}) {
     
             // Set the player's selection to the clicked piece
             playerOne.selected = clickedPiece.id
+            playerOne.pieces[playerOne.selected].availableMoves = clickedPiece.availableMoves
         }
     }
 }
