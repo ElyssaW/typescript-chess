@@ -13,7 +13,6 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-console.log('Hello');
 var turnCount = 0;
 // Initialize board
 function createBoard() {
@@ -21,7 +20,7 @@ function createBoard() {
     // 2D array of rows/columns
     for (var i = 0; i < 8; i++) {
         // Holding objects, currently set to empty, but will contain pieces as they move around
-        newBoard.push(new Array([{}, {}, {}, {}, {}, {}, {}, {}]));
+        newBoard.push([]);
     }
     return newBoard;
 }
@@ -295,6 +294,7 @@ var Player = /** @class */ (function () {
     function Player(name, color) {
         this.pieces = [];
         this.capturedPieces = [];
+        this.inCheck = false;
         this.name = name;
         this.color = color;
     }
@@ -309,10 +309,8 @@ var Player = /** @class */ (function () {
     Player.prototype.capturePiece = function (piece) {
         this.capturedPieces.push(piece);
         var captured = document.getElementById(this.color + "captured");
-        console.log(captured);
         var newCapture = document.createElement('span');
         newCapture.className = "square " + piece.color + piece.name.toLowerCase();
-        console.log(newCapture);
         captured.appendChild(newCapture);
     };
     Player.prototype.createPieces = function (backRow, frontRow) {
@@ -346,8 +344,62 @@ var playerOne = new Player('Elyssa', 'white');
 playerOne.createPieces(0, 1);
 var playerTwo = new Player('Guest', 'black');
 playerTwo.createPieces(7, 6);
+function drawLineBetweenSquares(p1, p2) {
+    var lineStart = { x: 0, y: 0 };
+    var lineEnd = { x: 0, y: 0 };
+    if (p1.x < p2.x) {
+        lineStart.x = p1.x;
+        lineEnd.x = p2.x;
+    }
+    else {
+        lineStart.x = p2.x;
+        lineEnd.x = p1.x;
+    }
+    if (p1.y < p2.y) {
+        lineStart.y = p1.y;
+        lineEnd.y = p2.y;
+    }
+    else {
+        lineStart.y = p2.y;
+        lineEnd.y = p1.y;
+    }
+    while (lineStart.x <= lineEnd.x && lineStart.y <= lineEnd.y) {
+        var square = document.getElementById("" + lineStart.x + lineStart.y);
+        square.style.backgroundColor = 'purple';
+        if (lineStart.x <= lineEnd.x) {
+            lineStart.x++;
+        }
+        if (lineStart.y <= lineEnd.y) {
+            lineStart.y++;
+        }
+    }
+}
 // Check position
-// Checkmate position
+function putInCheck(player, kingPos, enemyPos) {
+    document.getElementById(player.color + "CheckBanner").innerText = 'In Check!';
+    document.getElementById("" + kingPos.x + kingPos.y).style.backgroundColor = 'purple';
+    drawLineBetweenSquares(kingPos, enemyPos);
+}
+function removeFromCheck(player) {
+    document.getElementById(player.color + "CheckBanner").innerText = '';
+}
+function lookForCheck(player, opponent) {
+    var kingPos = player.pieces[15].pos;
+    player.inCheck = false;
+    opponent.pieces.forEach(function (piece) {
+        piece.availableMoves.forEach(function (move) {
+            if (move.x == kingPos.x && move.y == kingPos.y) {
+                player.inCheck = true;
+                putInCheck(player, kingPos, { x: piece.pos.x, y: piece.pos.y });
+            }
+        });
+    });
+    if (player.inCheck) {
+    }
+    else {
+        removeFromCheck(player);
+    }
+}
 function generateAllAvailableMoves() {
     function generatePlayerMoves(player) {
         player.pieces.forEach(function (piece) {
@@ -383,9 +435,15 @@ function drawBoard() {
             }
         });
     }
+    console.log('Before clear');
+    console.log(board);
     clearBoard();
+    console.log('Before draw');
+    console.log(board);
     drawPlayerPieces(playerOne);
     drawPlayerPieces(playerTwo);
+    console.log('After draw');
+    console.log(board);
 }
 function handleTurn(e, square, player, opponent) {
     // Check if the square clicked on contains a piece
@@ -470,10 +528,12 @@ function pieceClicked(e, square) {
         turnCount++;
         generateAllAvailableMoves();
         if (turnCount % 2 == 0) {
+            lookForCheck(playerOne, playerTwo);
             changeTurn(playerOne);
             clearTurn(playerTwo);
         }
         else {
+            lookForCheck(playerTwo, playerOne);
             changeTurn(playerTwo);
             clearTurn(playerOne);
         }

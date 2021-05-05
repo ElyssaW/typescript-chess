@@ -1,5 +1,3 @@
-console.log('Hello')
-
 let turnCount = 0
 
 // Initialize board
@@ -9,7 +7,7 @@ function createBoard() {
     // 2D array of rows/columns
     for (let i = 0; i < 8; i++) {
         // Holding objects, currently set to empty, but will contain pieces as they move around
-        newBoard.push(new Array([ {}, {}, {}, {}, {}, {}, {}, {} ]))
+        newBoard.push([])
     }
 
     return newBoard
@@ -346,6 +344,7 @@ class Player {
     pieces = []
     capturedPieces = []
     selected: number
+    inCheck = false
 
     constructor(name: string, color: string) {
         this.name = name
@@ -366,10 +365,8 @@ class Player {
         this.capturedPieces.push(piece)
 
         let captured = document.getElementById(`${this.color}captured`)
-        console.log(captured)
         let newCapture = document.createElement('span')
         newCapture.className = `square ${piece.color}${piece.name.toLowerCase()}`
-        console.log(newCapture)
 
         captured.appendChild(newCapture)
     }
@@ -443,8 +440,71 @@ playerOne.createPieces(0, 1)
 let playerTwo = new Player('Guest', 'black')
 playerTwo.createPieces(7, 6)
 
+function drawLineBetweenSquares (p1: {x:number, y: number}, p2: {x: number, y: number}) {
+    let lineStart = {x: 0, y: 0}
+    let lineEnd = {x: 0, y: 0}
+
+    if (p1.x < p2.x) {
+        lineStart.x = p1.x
+        lineEnd.x = p2.x
+    } else {
+        lineStart.x = p2.x
+        lineEnd.x = p1.x
+    }
+
+    if (p1.y < p2.y) {
+        lineStart.y = p1.y
+        lineEnd.y = p2.y
+    } else {
+        lineStart.y = p2.y
+        lineEnd.y = p1.y
+    }
+
+    while (lineStart.x <= lineEnd.x && lineStart.y <= lineEnd.y) {
+        let square = document.getElementById(`${lineStart.x}${lineStart.y}`)
+        square.style.backgroundColor = 'purple'
+
+        if (lineStart.x <= lineEnd.x) {
+            lineStart.x++
+        }
+
+        if (lineStart.y <= lineEnd.y) {
+            lineStart.y++
+        }
+    }
+}
+
 // Check position
-    // Checkmate position
+function putInCheck(player: Player, kingPos: {x: number, y: number}, enemyPos: {x: number, y: number}) {
+    document.getElementById(`${player.color}CheckBanner`).innerText = 'In Check!'
+    document.getElementById(`${kingPos.x}${kingPos.y}`).style.backgroundColor = 'purple'
+    drawLineBetweenSquares(kingPos, enemyPos)
+}
+
+function removeFromCheck(player: Player) {
+    document.getElementById(`${player.color}CheckBanner`).innerText = ''
+}
+
+function lookForCheck(player: Player, opponent: Player) {
+
+    let kingPos = player.pieces[15].pos
+    player.inCheck = false
+
+    opponent.pieces.forEach(piece => {
+        piece.availableMoves.forEach(move => {
+            if (move.x == kingPos.x && move.y == kingPos.y) {
+                player.inCheck = true
+                putInCheck(player, kingPos, { x: piece.pos.x, y: piece.pos.y})
+            }
+        });
+    })
+
+    if (player.inCheck) {
+        
+    } else {
+        removeFromCheck(player)
+    }
+}
 
 function generateAllAvailableMoves () {
 
@@ -457,7 +517,6 @@ function generateAllAvailableMoves () {
 
     generatePlayerMoves(playerOne)
     generatePlayerMoves(playerTwo)
-
 }
 
 function drawBoard() {
@@ -487,12 +546,18 @@ function drawBoard() {
                 square.style.backgroundImage = `url('images/${piece.color}${piece.name.toLowerCase()}.png')`
                 board[piece.pos.x][piece.pos.y] = piece
             }
-        });
+        })
     }
 
+    console.log('Before clear')
+    console.log(board)
     clearBoard()
+    console.log('Before draw')
+    console.log(board)
     drawPlayerPieces(playerOne)
     drawPlayerPieces(playerTwo)
+    console.log('After draw')
+    console.log(board)
 }
 
 function handleTurn (e, square:{x:number, y:number}, player: Player, opponent: Player) {
@@ -598,9 +663,11 @@ function pieceClicked (e, square:{x:number, y:number}) {
         generateAllAvailableMoves()
 
         if (turnCount % 2 == 0) {
+            lookForCheck(playerOne, playerTwo)
             changeTurn(playerOne)
             clearTurn(playerTwo)
         } else {
+            lookForCheck(playerTwo, playerOne)
             changeTurn(playerTwo)
             clearTurn(playerOne)
         }
