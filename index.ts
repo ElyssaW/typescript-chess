@@ -478,7 +478,8 @@ function drawLineBetweenSquares (p1: {x:number, y: number}, p2: {x: number, y: n
 function putInCheck(player: Player, kingPos: {x: number, y: number}, enemyPos: {x: number, y: number}) {
     document.getElementById(`${player.color}CheckBanner`).innerText = 'In Check!'
     document.getElementById(`${kingPos.x}${kingPos.y}`).style.backgroundColor = 'purple'
-    drawLineBetweenSquares(kingPos, enemyPos)
+    document.getElementById(`${enemyPos.x}${enemyPos.y}`).style.backgroundColor = 'purple'
+    //drawLineBetweenSquares(kingPos, enemyPos)
 }
 
 function removeFromCheck(player: Player) {

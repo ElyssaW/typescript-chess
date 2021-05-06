@@ -5,9 +5,9 @@ Just a little implementation of Chess in Typescript. I'm starting with a basic i
 ## To-Do
 
 - [x] Initialize board
-- [ ] Create classes for each piece
-- [ ] Set starting board state
-- [ ] Set turn system
-- [ ] Set "selected piece" mechanic, so players can move their pieces
-- [ ] Create function to look for Check state
+- [x] Create classes for each piece
+- [x] Set starting board state
+- [x] Set turn system
+- [x] Set "selected piece" mechanic, so players can move their pieces
+- [x] Create function to look for Check state
 - [ ] Create function to look for Checkmate state 
