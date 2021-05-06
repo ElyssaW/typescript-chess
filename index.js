@@ -168,26 +168,26 @@ var Pawn = /** @class */ (function (_super) {
         var _this = _super.call(this, id, 'Pawn', color, pos, color == 'white' ? 1 : -1) || this;
         _this.generateMoves = function () {
             if (!_this.hasMoved) {
-                if (checkBoundary(_this.pos.x, _this.pos.y + (_this.pace * 2))) {
+                if (checkBoundary(_this.pos.x, _this.pos.y + (_this.pace * 2)) && checkSquare(_this.pos.x, _this.pos.y + (_this.pace * 2)) == false) {
                     _this.availableMoves.push({
                         x: _this.pos.x,
                         y: _this.pos.y + (_this.pace * 2)
                     });
                 }
             }
-            if (checkBoundary(_this.pos.x, _this.pos.y + _this.pace)) {
+            if (checkBoundary(_this.pos.x, _this.pos.y + _this.pace) || (checkSquare(_this.pos.x + _this.pace, _this.pos.y + _this.pace) && _this.color != checkSquare(_this.pos.x + _this.pace, _this.pos.y + _this.pace).color)) {
                 _this.availableMoves.push({
                     x: _this.pos.x,
                     y: _this.pos.y + _this.pace
                 });
             }
-            if (checkBoundary(_this.pos.x + 1, _this.pos.y + _this.pace) && checkSquare(_this.pos.x + 1, _this.pos.y + _this.pace)) {
+            if (checkBoundary(_this.pos.x + 1, _this.pos.y + _this.pace) && checkSquare(_this.pos.x + 1, _this.pos.y + _this.pace) && _this.color != checkSquare(_this.pos.x + 1, _this.pos.y + _this.pace).color) {
                 _this.availableMoves.push({
                     x: _this.pos.x + 1,
                     y: _this.pos.y + _this.pace
                 });
             }
-            if (checkBoundary(_this.pos.x - 1, _this.pos.y + _this.pace) && checkSquare(_this.pos.x - 1, _this.pos.y + _this.pace)) {
+            if (checkBoundary(_this.pos.x - 1, _this.pos.y + _this.pace) && checkSquare(_this.pos.x - 1, _this.pos.y + _this.pace) && _this.color != checkSquare(_this.pos.x - 1, _this.pos.y + _this.pace).color) {
                 _this.availableMoves.push({
                     x: _this.pos.x - 1,
                     y: _this.pos.y + _this.pace
@@ -217,31 +217,31 @@ var Knight = /** @class */ (function (_super) {
     function Knight(id, color, pos) {
         var _this = _super.call(this, id, 'Knight', color, pos, 3) || this;
         _this.generateMoves = function () {
-            if (checkBoundary(_this.pos.x + 1, _this.pos.y + 2)) {
+            if (checkBoundary(_this.pos.x + 1, _this.pos.y + 2) && _this.color != checkSquare(_this.pos.x + 1, _this.pos.y + 2).color) {
                 _this.availableMoves.push({ x: _this.pos.x + 1, y: _this.pos.y + 2 });
             }
-            if (checkBoundary(_this.pos.x + 2, _this.pos.y + 1)) {
+            if (checkBoundary(_this.pos.x + 2, _this.pos.y + 1) && _this.color != checkSquare(_this.pos.x + 2, _this.pos.y + 1).color) {
                 _this.availableMoves.push({ x: _this.pos.x + 2, y: _this.pos.y + 1 });
             }
             //===============
-            if (checkBoundary(_this.pos.x - 1, _this.pos.y + 2)) {
+            if (checkBoundary(_this.pos.x - 1, _this.pos.y + 2) && _this.color != checkSquare(_this.pos.x - 1, _this.pos.y + 2).color) {
                 _this.availableMoves.push({ x: _this.pos.x - 1, y: _this.pos.y + 2 });
             }
-            if (checkBoundary(_this.pos.x - 2, _this.pos.y + 1)) {
+            if (checkBoundary(_this.pos.x - 2, _this.pos.y + 1) && _this.color != checkSquare(_this.pos.x - 2, _this.pos.y + 1).color) {
                 _this.availableMoves.push({ x: _this.pos.x - 2, y: _this.pos.y + 1 });
             }
             //===============
-            if (checkBoundary(_this.pos.x + 1, _this.pos.y - 2)) {
+            if (checkBoundary(_this.pos.x + 1, _this.pos.y - 2) && _this.color != checkSquare(_this.pos.x + 1, _this.pos.y - 2).color) {
                 _this.availableMoves.push({ x: _this.pos.x + 1, y: _this.pos.y - 2 });
             }
-            if (checkBoundary(_this.pos.x + 2, _this.pos.y - 1)) {
+            if (checkBoundary(_this.pos.x + 2, _this.pos.y - 1) && _this.color != checkSquare(_this.pos.x + 2, _this.pos.y - 1).color) {
                 _this.availableMoves.push({ x: _this.pos.x + 2, y: _this.pos.y - 1 });
             }
             //================
-            if (checkBoundary(_this.pos.x - 1, _this.pos.y - 2)) {
+            if (checkBoundary(_this.pos.x - 1, _this.pos.y - 2) && _this.color != checkSquare(_this.pos.x - 1, _this.pos.y - 2).color) {
                 _this.availableMoves.push({ x: _this.pos.x - 1, y: _this.pos.y - 2 });
             }
-            if (checkBoundary(_this.pos.x - 2, _this.pos.y - 1)) {
+            if (checkBoundary(_this.pos.x - 2, _this.pos.y - 1) && _this.color != checkSquare(_this.pos.x - 2, _this.pos.y - 1).color) {
                 _this.availableMoves.push({ x: _this.pos.x - 2, y: _this.pos.y - 1 });
             }
         };
@@ -379,7 +379,6 @@ function putInCheck(player, kingPos, enemyPos) {
     document.getElementById(player.color + "CheckBanner").innerText = 'In Check!';
     document.getElementById("" + kingPos.x + kingPos.y).style.backgroundColor = 'purple';
     document.getElementById("" + enemyPos.x + enemyPos.y).style.backgroundColor = 'purple';
-    //drawLineBetweenSquares(kingPos, enemyPos)
 }
 function removeFromCheck(player) {
     document.getElementById(player.color + "CheckBanner").innerText = '';

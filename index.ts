@@ -211,7 +211,7 @@ class Pawn extends Piece {
         this.generateMoves = () => {
 
             if (!this.hasMoved) {
-                if (checkBoundary(this.pos.x, this.pos.y + (this.pace*2))) {
+                if (checkBoundary(this.pos.x, this.pos.y + (this.pace*2)) && checkSquare(this.pos.x, this.pos.y + (this.pace*2)) == false) {
                     this.availableMoves.push({
                         x: this.pos.x,
                         y: this.pos.y + (this.pace*2)
@@ -219,21 +219,21 @@ class Pawn extends Piece {
                 }
             }
 
-            if (checkBoundary(this.pos.x, this.pos.y + this.pace)) {
+            if (checkBoundary(this.pos.x, this.pos.y + this.pace) || (checkSquare(this.pos.x + this.pace, this.pos.y + this.pace) && this.color != checkSquare(this.pos.x + this.pace, this.pos.y + this.pace).color)) {
                 this.availableMoves.push({
                     x: this.pos.x,
                     y: this.pos.y + this.pace
                 })
             }
 
-            if (checkBoundary(this.pos.x + 1, this.pos.y + this.pace) && checkSquare(this.pos.x + 1, this.pos.y + this.pace)) {
+            if (checkBoundary(this.pos.x + 1, this.pos.y + this.pace) && checkSquare(this.pos.x + 1, this.pos.y + this.pace) && this.color != checkSquare(this.pos.x + 1, this.pos.y + this.pace).color) {
                 this.availableMoves.push({
                     x: this.pos.x + 1,
                     y: this.pos.y + this.pace
                 })
             }
 
-            if (checkBoundary(this.pos.x - 1, this.pos.y + this.pace) && checkSquare(this.pos.x - 1, this.pos.y + this.pace)) {
+            if (checkBoundary(this.pos.x - 1, this.pos.y + this.pace) && checkSquare(this.pos.x - 1, this.pos.y + this.pace) && this.color != checkSquare(this.pos.x - 1, this.pos.y + this.pace).color) {
                 this.availableMoves.push({
                     x: this.pos.x - 1,
                     y: this.pos.y + this.pace
@@ -262,38 +262,38 @@ class Knight extends Piece {
         super(id, 'Knight', color, pos, 3)
 
         this.generateMoves = () => {
-            if (checkBoundary(this.pos.x+1,this.pos.y+2)) {
+            if (checkBoundary(this.pos.x+1,this.pos.y+2) && this.color != checkSquare(this.pos.x+1, this.pos.y+2).color) {
                 this.availableMoves.push({x: this.pos.x+1, y: this.pos.y+2})
             }
 
-            if (checkBoundary(this.pos.x+2,this.pos.y+1)) {
+            if (checkBoundary(this.pos.x+2,this.pos.y+1) && this.color != checkSquare(this.pos.x+2, this.pos.y+1).color) {
                 this.availableMoves.push({x: this.pos.x+2, y: this.pos.y+1})
             }
 
             //===============
-            if (checkBoundary(this.pos.x-1,this.pos.y+2)) {
+            if (checkBoundary(this.pos.x-1,this.pos.y+2) && this.color != checkSquare(this.pos.x-1, this.pos.y+2).color) {
                 this.availableMoves.push({x: this.pos.x-1, y: this.pos.y+2})
             }
 
-            if (checkBoundary(this.pos.x-2,this.pos.y+1)) {
+            if (checkBoundary(this.pos.x-2,this.pos.y+1) && this.color != checkSquare(this.pos.x-2, this.pos.y+1).color) {
                 this.availableMoves.push({x: this.pos.x-2, y: this.pos.y+1})
             }
 
             //===============
-            if (checkBoundary(this.pos.x+1,this.pos.y-2)) {
+            if (checkBoundary(this.pos.x+1,this.pos.y-2) && this.color != checkSquare(this.pos.x+1, this.pos.y-2).color) {
                 this.availableMoves.push({x: this.pos.x+1, y: this.pos.y-2})
             }
             
-            if (checkBoundary(this.pos.x+2,this.pos.y-1)) {
+            if (checkBoundary(this.pos.x+2,this.pos.y-1) && this.color != checkSquare(this.pos.x+2, this.pos.y-1).color) {
                 this.availableMoves.push({x: this.pos.x+2, y: this.pos.y-1})
             }
 
             //================
-            if (checkBoundary(this.pos.x-1,this.pos.y-2)) {
+            if (checkBoundary(this.pos.x-1,this.pos.y-2) && this.color != checkSquare(this.pos.x-1, this.pos.y-2).color) {
                 this.availableMoves.push({x: this.pos.x-1, y: this.pos.y-2})
             }
 
-            if (checkBoundary(this.pos.x-2,this.pos.y-1)) {
+            if (checkBoundary(this.pos.x-2,this.pos.y-1) && this.color != checkSquare(this.pos.x-2, this.pos.y-1).color) {
                 this.availableMoves.push({x: this.pos.x-2, y: this.pos.y-1})
             }
         }
@@ -479,7 +479,6 @@ function putInCheck(player: Player, kingPos: {x: number, y: number}, enemyPos: {
     document.getElementById(`${player.color}CheckBanner`).innerText = 'In Check!'
     document.getElementById(`${kingPos.x}${kingPos.y}`).style.backgroundColor = 'purple'
     document.getElementById(`${enemyPos.x}${enemyPos.y}`).style.backgroundColor = 'purple'
-    //drawLineBetweenSquares(kingPos, enemyPos)
 }
 
 function removeFromCheck(player: Player) {
