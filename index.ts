@@ -1,5 +1,15 @@
 let turnCount = 0
 
+let settings = {
+    white: '#FCD7AD',
+    black: '#F6C28B',
+    yellow: '#FF934F',
+    red: '#EE6055',
+    green: '#77BFA3',
+    purple: '#F61067',
+    gameWon: false
+}
+
 // Initialize board
 function createBoard() {
     let newBoard = []
@@ -174,8 +184,14 @@ class Piece {
         y: number
     }
 
-    // Color or "team" of the piece
+    // Team of the piece
+    team: string
+
+    // Color of the piece
     color: string
+
+    // Which player they belong to
+    player: Player
 
     // How many spaces the piece can move at once
     pace: number
@@ -189,8 +205,10 @@ class Piece {
     // What spaces can the piece move to
     availableMoves = []
 
-    constructor(id: number, name: string, color: string, pos: {x: number, y: number}, pace: number) {
+    constructor(id: number, player: Player, team:string, name: string, color: string, pos: {x: number, y: number}, pace: number) {
         this.id = id
+        this.player = player
+        this.team = team
         this.name = name
         this.color = color
         this.pos = pos
@@ -204,9 +222,9 @@ class Piece {
 
 // Pawn
 class Pawn extends Piece {
-    constructor (id: number, color: string, pos: {x: number, y: number}) {
+    constructor (id: number, player: Player, team: string, color: string, pos: {x: number, y: number}) {
         
-        super(id, 'Pawn', color, pos, color  == 'white' ? 1 : -1)
+        super(id, player, team, 'Pawn', color, pos, color  == settings.white ? 1 : -1)
 
         this.generateMoves = () => {
 
@@ -245,8 +263,8 @@ class Pawn extends Piece {
 
 // Rook
 class Rook extends Piece {
-    constructor (id: number, color: string, pos: {x: number, y: number}) {
-        super(id, 'Rook', color, pos, board.length)
+    constructor (id: number, player: Player, team: string, color: string, pos: {x: number, y: number}) {
+        super(id, player, team, 'Rook', color, pos, board.length)
 
         this.generateMoves = () => {
             this.availableMoves = this.availableMoves.concat(checkCol(this))
@@ -258,8 +276,8 @@ class Rook extends Piece {
 
 // Knight
 class Knight extends Piece {
-    constructor (id: number, color: string, pos: {x: number, y: number}) {
-        super(id, 'Knight', color, pos, 3)
+    constructor (id: number, player: Player, team: string, color: string, pos: {x: number, y: number}) {
+        super(id, player, team, 'Knight', color, pos, 3)
 
         this.generateMoves = () => {
             if (checkBoundary(this.pos.x+1,this.pos.y+2) && this.color != checkSquare(this.pos.x+1, this.pos.y+2).color) {
@@ -302,8 +320,8 @@ class Knight extends Piece {
 
 // Bishop
 class Bishop extends Piece {
-    constructor (id: number, color: string, pos: {x: number, y: number}) {
-        super(id, 'Bishop', color, pos, board.length)
+    constructor (id: number, player: Player, team: string, color: string, pos: {x: number, y: number}) {
+        super(id, player, team, 'Bishop', color, pos, board.length)
 
         this.generateMoves = () => {
             this.availableMoves = this.availableMoves.concat(checkDiagonal(this))
@@ -313,8 +331,8 @@ class Bishop extends Piece {
 
 // Queen
 class Queen extends Piece {
-    constructor (id: number, color: string, pos: {x: number, y: number}) {
-        super(id, 'Queen', color, pos, board.length)
+    constructor (id: number, player: Player, team: string, color: string, pos: {x: number, y: number}) {
+        super(id, player, team, 'Queen', color, pos, board.length)
 
         this.generateMoves = () => {
             this.availableMoves = this.availableMoves.concat(checkDiagonal(this))
@@ -326,8 +344,8 @@ class Queen extends Piece {
 
 // King
 class King extends Piece {
-    constructor (id: number, color: string, pos: {x: number, y: number}) {
-        super(id, 'King', color, pos, 2)
+    constructor (id: number, player: Player, team: string, color: string, pos: {x: number, y: number}) {
+        super(id, player, team, 'King', color, pos, 2)
 
         this.generateMoves = () => {
             this.availableMoves = this.availableMoves.concat(checkDiagonal(this))
@@ -341,13 +359,15 @@ class King extends Piece {
 class Player {
     name: string
     color: string
+    team: string
     pieces = []
     capturedPieces = []
     selected: number
     inCheck = false
 
-    constructor(name: string, color: string) {
+    constructor(team: string, name: string, color: string) {
         this.name = name
+        this.team = team
         this.color = color
     }
 
@@ -364,80 +384,84 @@ class Player {
     capturePiece(piece: Piece) {
         this.capturedPieces.push(piece)
 
-        let captured = document.getElementById(`${this.color}captured`)
+        let captured = document.getElementById(`${this.team}captured`)
         let newCapture = document.createElement('span')
-        newCapture.className = `square ${piece.color}${piece.name.toLowerCase()}`
+        newCapture.className = `square captured ${piece.team}${piece.name.toLowerCase()}`
 
         captured.appendChild(newCapture)
+
+        if (piece.name === 'King') {
+            victory(piece.player, this)
+        }
     }
 
     createPieces (backRow:number, frontRow:number) {
         // Create Pawns
         this.pieces.push(
-            new Pawn(0, this.color, {x:0, y:frontRow})
+            new Pawn(0, this, this.team, this.color, {x:0, y:frontRow})
         )
         this.pieces.push(
-            new Pawn(1, this.color, {x:1, y:frontRow})
+            new Pawn(1, this, this.team, this.color, {x:1, y:frontRow})
         )
         this.pieces.push(
-            new Pawn(2, this.color, {x:2, y:frontRow})
+            new Pawn(2, this, this.team, this.color, {x:2, y:frontRow})
         )
         this.pieces.push(
-            new Pawn(3, this.color, {x:3, y:frontRow})
+            new Pawn(3, this, this.team, this.color, {x:3, y:frontRow})
         )
         this.pieces.push(
-            new Pawn(4, this.color, {x:4, y:frontRow})
+            new Pawn(4, this, this.team, this.color, {x:4, y:frontRow})
         )
         this.pieces.push(
-            new Pawn(5, this.color, {x:5, y:frontRow})
+            new Pawn(5, this, this.team, this.color, {x:5, y:frontRow})
         )
         this.pieces.push(
-            new Pawn(6, this.color, {x:6, y:frontRow})
+            new Pawn(6, this, this.team, this.color, {x:6, y:frontRow})
         )
         this.pieces.push(
-            new Pawn(7, this.color, {x:7, y:frontRow})
+            new Pawn(7, this, this.team, this.color, {x:7, y:frontRow})
         )
 
         // Create other pieces
         // Rooks
         this.pieces.push(
-            new Rook(8, this.color, {x:0, y:backRow})
+            new Rook(8, this, this.team, this.color, {x:0, y:backRow})
         )
         this.pieces.push(
-            new Rook(9, this.color, {x:7, y:backRow})
+            new Rook(9, this, this.team, this.color, {x:7, y:backRow})
         )
 
         //Knights
         this.pieces.push(
-            new Knight(10, this.color, {x:1, y:backRow})
+            new Knight(10, this, this.team, this.color, {x:1, y:backRow})
         )
         this.pieces.push(
-            new Knight(11, this.color, {x:6, y:backRow})
+            new Knight(11, this, this.team, this.color, {x:6, y:backRow})
         )
 
         // Bishops
         this.pieces.push(
-            new Bishop(12, this.color, {x:2, y:backRow})
+            new Bishop(12, this, this.team, this.color, {x:2, y:backRow})
         )
         this.pieces.push(
-            new Bishop(13, this.color, {x:5, y:backRow})
+            new Bishop(13, this, this.team, this.color, {x:5, y:backRow})
         )
 
         // Queen
         this.pieces.push(
-            new Queen(14, this.color, {x:4, y:backRow})
+            new Queen(14, this, this.team, this.color, {x:4, y:backRow})
         )
 
         // King
         this.pieces.push(
-            new King(15, this.color, {x:3, y:backRow})
+            new King(15, this, this.team, this.color, {x:3, y:backRow})
         )
     }
 }
 
-let playerOne = new Player('Elyssa', 'white')
+let playerOne = new Player('white', 'Host', settings.white)
 playerOne.createPieces(0, 1)
-let playerTwo = new Player('Guest', 'black')
+let playerTwo = new Player('black', 'Guest', settings.black)
 playerTwo.createPieces(7, 6)
 
 function drawLineBetweenSquares (p1: {x:number, y: number}, p2: {x: number, y: number}) {
@@ -462,7 +486,7 @@ function drawLineBetweenSquares (p1: {x:number, y: number}, p2: {x: number, y: n
 
     while (lineStart.x <= lineEnd.x && lineStart.y <= lineEnd.y) {
         let square = document.getElementById(`${lineStart.x}${lineStart.y}`)
-        square.style.backgroundColor = 'purple'
+        square.style.backgroundColor = settings.purple
 
         if (lineStart.x <= lineEnd.x) {
             lineStart.x++
@@ -476,13 +500,13 @@ function drawLineBetweenSquares (p1: {x:number, y: number}, p2: {x: number, y: n
 
 // Check position
 function putInCheck(player: Player, kingPos: {x: number, y: number}, enemyPos: {x: number, y: number}) {
-    document.getElementById(`${player.color}CheckBanner`).innerText = 'In Check!'
-    document.getElementById(`${kingPos.x}${kingPos.y}`).style.backgroundColor = 'purple'
-    document.getElementById(`${enemyPos.x}${enemyPos.y}`).style.backgroundColor = 'purple'
+    document.getElementById(`${player.team}checkbanner`).innerText = 'In Check!'
+    document.getElementById(`${kingPos.x}${kingPos.y}`).style.backgroundColor = settings.purple
+    document.getElementById(`${enemyPos.x}${enemyPos.y}`).style.backgroundColor = settings.purple
 }
 
 function removeFromCheck(player: Player) {
-    document.getElementById(`${player.color}CheckBanner`).innerText = ''
+    document.getElementById(`${player.team}checkbanner`).innerText = ''
 }
 
 function lookForCheck(player: Player, opponent: Player) {
@@ -491,18 +515,18 @@ function lookForCheck(player: Player, opponent: Player) {
     player.inCheck = false
 
     opponent.pieces.forEach(piece => {
-        piece.availableMoves.forEach(move => {
-            if (move.x == kingPos.x && move.y == kingPos.y) {
-                player.inCheck = true
-                putInCheck(player, kingPos, { x: piece.pos.x, y: piece.pos.y})
-            }
-        });
+        if (piece.alive) {
+            piece.availableMoves.forEach(move => {
+                if (move.x == kingPos.x && move.y == kingPos.y) {
+                    player.inCheck = true
+                    putInCheck(player, kingPos, { x: piece.pos.x, y: piece.pos.y})
+                }
+            })
+        }
     })
 
-    if (player.inCheck) {
-        
-    } else {
-        removeFromCheck(player)
+    if (!player.inCheck) {
+        removeFromCheck(player)   
     }
 }
 
@@ -529,9 +553,9 @@ function drawBoard() {
                 square.style.backgroundImage = 'none'
 
                 if (i % 2 == 0 && j % 2 == 1 || i % 2 == 1 && j % 2 == 0) {
-                    square.style.backgroundColor = 'white'
+                    square.style.backgroundColor = settings.white
                 } else {
-                    square.style.backgroundColor = 'black'
+                    square.style.backgroundColor = settings.black
                 }
             }
         }
@@ -543,21 +567,16 @@ function drawBoard() {
         player.pieces.forEach(piece => {
             if (piece.alive) {
                 let square = document.getElementById(`${piece.pos.x}${piece.pos.y}`)
-                square.style.backgroundImage = `url('images/${piece.color}${piece.name.toLowerCase()}.png')`
+                square.style.backgroundImage = `url('images/${piece.team}${piece.name.toLowerCase()}.png')`
                 board[piece.pos.x][piece.pos.y] = piece
             }
         })
     }
 
-    console.log('Before clear')
-    console.log(board)
     clearBoard()
-    console.log('Before draw')
-    console.log(board)
+
     drawPlayerPieces(playerOne)
     drawPlayerPieces(playerTwo)
-    console.log('After draw')
-    console.log(board)
 }
 
 function handleTurn (e, square:{x:number, y:number}, player: Player, opponent: Player) {
@@ -611,7 +630,7 @@ function handleTurn (e, square:{x:number, y:number}, player: Player, opponent: P
             if (clickedPiece.availableMoves.length) {
 
                 // Set the space of the selected piece to yellow
-                e.style.backgroundColor = 'yellow'
+                e.style.backgroundColor = settings.yellow
         
                 // Highlight each possible space
                 clickedPiece.availableMoves.forEach((move) => {
@@ -619,11 +638,11 @@ function handleTurn (e, square:{x:number, y:number}, player: Player, opponent: P
         
                     // If the possible space contains an enemy, highlight in red
                     if (board[move.x][move.y]) {
-                        availableSquare.style.backgroundColor = 'red'
+                        availableSquare.style.backgroundColor = settings.red
 
                     // If it is empty, highlight in green
                     } else {
-                        availableSquare.style.backgroundColor = 'green'
+                        availableSquare.style.backgroundColor = settings.green
                     }
                 });
         
@@ -636,42 +655,85 @@ function handleTurn (e, square:{x:number, y:number}, player: Player, opponent: P
 }
 
 function changeTurn (player: Player) {
-    let turnheader = document.getElementById(`${player.color}turn`)
-    turnheader.className = `turnheader ${player.color}current`
-
+    let turnheader = document.getElementById(`${player.team}turn`)
+    turnheader.className = `turnheader ${player.team}current`
     turnheader.innerText = 'Your Turn'
 }
 
 function clearTurn (player: Player) {
-    let turnheader = document.getElementById(`${player.color}turn`)
+    let turnheader = document.getElementById(`${player.team}turn`)
     turnheader.className = `turnheader`
-
     turnheader.innerText = 'Opponent\'s Turn'
 }
 
 function pieceClicked (e, square:{x:number, y:number}) {
-    let turnHandled: boolean
+    if (!settings.gameWon) {
+        let turnHandled: boolean
 
-    if (turnCount % 2 === 0) {
-        turnHandled = handleTurn(e, square, playerOne, playerTwo)
-    } else {
-        turnHandled = handleTurn(e, square, playerTwo, playerOne)
-    }
-
-    if (turnHandled) {
-        turnCount++
-        generateAllAvailableMoves()
-
-        if (turnCount % 2 == 0) {
-            lookForCheck(playerOne, playerTwo)
-            changeTurn(playerOne)
-            clearTurn(playerTwo)
+        if (turnCount % 2 === 0) {
+            turnHandled = handleTurn(e, square, playerOne, playerTwo)
         } else {
-            lookForCheck(playerTwo, playerOne)
-            changeTurn(playerTwo)
-            clearTurn(playerOne)
+            turnHandled = handleTurn(e, square, playerTwo, playerOne)
+        }
+    
+        if (turnHandled && !settings.gameWon) {
+            turnCount++
+            generateAllAvailableMoves()
+    
+            if (turnCount % 2 == 0) {
+                lookForCheck(playerOne, playerTwo)
+                lookForCheck(playerTwo, playerOne)
+                changeTurn(playerOne)
+                clearTurn(playerTwo)
+            } else {
+                lookForCheck(playerOne, playerTwo)
+                lookForCheck(playerTwo, playerOne)
+                changeTurn(playerTwo)
+                clearTurn(playerOne)
+            }
         }
     }
+}
+
+function victory(loser: Player, victor: Player) {
+    settings.gameWon = true
+
+    let loserheader = document.getElementById(`${loser.team}turn`)
+    loserheader.className = `turnheader ${loser.team}current`
+    loserheader.innerText = 'You lost!'
+
+    let victorheader = document.getElementById(`${victor.team}turn`)
+    victorheader.className = `turnheader ${victor.team}current`
+    victorheader.innerText = 'You won!'
+
+    let counter = 0
+    const flashBoard = setInterval(() => {
+        for (let i = 0; i < 8; i++) {
+            for (let j = 0; j < 8; j++) {
+                let square = document.getElementById(`${i}${j}`)
+
+                if (counter % 2 === 0) {
+                    if ((i % 2 === 0 && j % 2 === 1) || (i % 2 === 1 && j % 2 === 0)) {
+                        square.style.backgroundColor = settings.white
+                        square.style.transform = 'rotate(5deg)'
+                    } else {
+                        square.style.backgroundColor = settings.black
+                        square.style.transform = 'rotate(-5deg)'
+                    }
+                } else {
+                    if ((i % 2 === 0 && j % 2 === 1) || (i % 2 === 1 && j % 2 === 0)) {
+                        square.style.backgroundColor = settings.black
+                        square.style.transform = 'rotate(-5deg)'
+                    } else {
+                        square.style.backgroundColor = settings.white
+                        square.style.transform = 'rotate(5deg)'
+                    }
+                }
+            }
+        }
+        
+        counter++
+    }, 500)
 }
 
 drawBoard()
