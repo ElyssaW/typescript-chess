@@ -349,9 +349,9 @@ var Player = /** @class */ (function () {
         this.pieces.push(new Bishop(12, this, this.team, this.color, { x: 2, y: backRow }));
         this.pieces.push(new Bishop(13, this, this.team, this.color, { x: 5, y: backRow }));
         // Queen
-        this.pieces.push(new Queen(14, this, this.team, this.color, { x: 4, y: backRow }));
+        this.pieces.push(new Queen(14, this, this.team, this.color, { x: 3, y: backRow }));
         // King
-        this.pieces.push(new King(15, this, this.team, this.color, { x: 3, y: backRow }));
+        this.pieces.push(new King(15, this, this.team, this.color, { x: 4, y: backRow }));
     };
     return Player;
 }());

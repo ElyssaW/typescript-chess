@@ -449,12 +449,12 @@ class Player {
 
         // Queen
         this.pieces.push(
-            new Queen(14, this, this.team, this.color, {x:4, y:backRow})
+            new Queen(14, this, this.team, this.color, {x:3, y:backRow})
         )
 
         // King
         this.pieces.push(
-            new King(15, this, this.team, this.color, {x:3, y:backRow})
+            new King(15, this, this.team, this.color, {x:4, y:backRow})
         )
     }
 }
